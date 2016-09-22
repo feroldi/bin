@@ -1,0 +1,18 @@
+#!/bin/zsh
+
+FOLD="/sys/class/power_supply"
+val=$(if [ -d $FOLD/BAT1 ]; then cat $FOLD/BAT1/capacity; fi)
+
+pow() {
+    pow=$(if [ $(cat $FOLD/ACAD/online) = 1 ]; then echo "200"; else echo "201"; fi;)
+    notify_bar alert $pow $val
+}
+
+if [ "$1" = "bar" ]; then
+    pow &
+elif [ "$1" = "cli" ]; then
+    echo "$val $(if [ $(cat $FOLD/ACAD/online) = 1 ]; then echo "charging"; else echo ""; fi;)"
+else
+    echo "$val"
+fi
+

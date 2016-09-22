@@ -1,0 +1,52 @@
+#!/usr/bin/env zsh
+
+. $HOME/scripts/extractcol.sh
+
+if [ -z $1 ]; then
+    echo "missing type parameter"
+    exit
+else
+    type_bar=$1
+fi
+
+if [ -z $2 ]; then
+    echo "missing icon"
+    exit
+else
+    icon=$2
+fi
+
+if [ -z $3 ]; then
+    echo "missing message"
+    exit
+else
+    msg=$3
+fi
+
+if [ -z $4 ]; then
+    TIME=10
+else
+    TIME=$4
+fi
+
+FONT1="boxxy"
+FONT2="siji"
+
+PW=220
+PH=40 # 20
+PX=5
+PY=5
+
+if [ "$type_bar" = "alert" ]; then
+    # XXX fucking hack here
+    while :; do
+        for i in {0..$TIME}
+        do
+            echo " %{F$BLUE}$(printf '%b' "\ue$icon") %{F$FG}$msg"
+            sleep .2
+        done
+        exit
+    done | \
+        lemonbar -g ${PW}x${PH}+${PX}+${PY} -f "$FONT1" -f "$FONT2" -B "$BG" -F "$FG" -d
+fi
+

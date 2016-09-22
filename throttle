@@ -1,0 +1,4 @@
+#!/bin/zsh
+
+echo "$1" | sudo tee /sys/class/thermal/cooling_device0/cur_state
+

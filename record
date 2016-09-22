@@ -1,0 +1,170 @@
+#!/bin/sh
+#
+# wildefyr & z3bra - 2016 (c) wtfpl
+# record x11 desktop using ffmpeg
+
+ARGS="$@"
+
+suffixLossless="mp4"
+suffixEncoded="webm"
+
+usage() {
+    cat << EOF
+Usage: $(basename $0) [-i wid] [-f framerate] [-f path] [-amkh]
+    -i|--wid:       Pass window id to record within its geometry.
+    -m|--mic:       Capture microphone output.
+    -a|--audio:     Record audio (Requires loopback device to be setup)
+    -e|--encode:    Encode the lossless file to webm.
+    -f|--framerate: Set the framerate of the recording as. [default: 30]
+    -n|--name:      Set the name/path to save the recording as. [default: ./recording]
+    -k|--kill:      Kill any currently running instances of ffmpeg.
+EOF
+
+    test -z $1 && exit 0 || exit $1
+}
+
+fnmatch() {
+    case "$2" in
+        $1) return 0 ;;
+        *)  printf '%s\n' "Please enter a valid window id."; usage 1 ;;
+    esac
+}
+
+record() {
+    test "$micFlag" = "true" && {
+        printf '%s' "Recording with microphone: "
+        ffmpeg -f alsa -i hw:0 -f x11grab -s ${RESOLUTION} -framerate 60 -r \
+        ${FRAMERATE} -i ${AREA} -c:v libx264 -crf 0 -threads 4 -qp 0 -preset \
+        ultrafast -y -loglevel quiet ${RECPATH}.${suffixLossless}
+    } || {
+        ffmpeg -f x11grab -s ${RESOLUTION} -framerate 60 -r ${FRAMERATE} -i \
+        ${AREA} -c:v libx264 -crf 0 -threads 4 -qp 0 -preset ultrafast -y \
+        -loglevel quiet ${RECPATH}.${suffixLossless}
+    }
+}
+
+reencode() {
+    test ! -e ${RECPATH}.${suffixLossless} && {
+        printf '%s\n' "${RECPATH}.${suffixLossless} doesn't exist! Exiting..."
+        exit 3
+    }
+
+    test -e ${RECPATH}.${suffixEncoded} && {
+        printf '%s' "Overwrite existing ${RECPATH}.${suffixEncoded}? [y/n]: "; \
+            while read -r confirm; do
+                test "$confirm" = "y" && {
+                    break
+                }
+                test "$confirm" = "n" && {
+                    return
+                }
+                printf '%s\n' "Please enter y or n."
+                printf '%s' "Overwrite existing ${RECPATH}.${suffixLossless}? [y/n]: "
+        done
+    }
+
+    printf '%s' "Delete lossless file? [y/n]: "; while read -r confirm; do
+        test "$confirm" = "y" && {
+            deleteFlag=true
+            break
+        }
+        test "$confirm" = "n" && {
+            break
+        }
+        printf '%s\n' "Please enter y or n."
+        printf '%s' "Delete lossless file? [y/n]: "
+    done
+
+    test "$deleteFlag" = "true" && {
+        printf '%s\n' "Deleting file: ${RECPATH}.${suffixLossless}"
+        rm -f "${RECPATH}.${suffixLossless}"
+    }
+
+    printf '%s\n' "Starting re-encode..."
+    ffmpeg -i ${RECPATH}.${suffixLossless} -c:v libvpx -b:v 20M -c:a \
+    libvorbis -quality realtime -threads 4 -y -loglevel quiet ${RECPATH}.${suffixEncoded}
+    printf '%s\n' "Re-encode complete."
+}
+
+validateDeps() {
+    type ffmpeg 2>&1 > /dev/null || {
+        printf '%s\n' "What the hell is wrong with you? You don't have ffmpeg!" >&2
+        exit 2
+    }
+    type wattr 2>&1 > /dev/null || {
+        printf '%s\n' "wattr was not found on your \$PATH" >&2
+        printf '%s\n' "Window ID region-based capture won't work." >&2
+        exit 2
+    }
+}
+
+main() {
+    validateDeps
+
+    AREA=":0.0"
+    FRAMERATE=30
+    RECPATH="recording"
+    RESOLUTION=$(wattr wh $(lsw -r) | tr \  x)
+
+    for arg in "$@"; do
+        test "$nameFlag" = "true" && {
+            RECPATH="$arg"
+            nameFlag=false
+        }
+        test "$frameFlag" = "true" && {
+            FRAMERATE="$arg"
+            frameFlag=false
+        }
+
+        case $arg in
+            -m|--mic)        micFlag=true        ;;
+            -n|--name)       nameFlag=true       ;;
+            -f|--framerate)  frameFlag=true      ;;
+            -a|--audio)      audioFlag=true      ;;
+            -e|--encode)     encodeFlag=true     ;;
+            -E|--encodeFile) reencode; exit      ;;
+            -k|--kill)       pkill ffmpeg; exit  ;;
+        esac
+    done
+
+    for arg in "$@"; do
+        test "$widFlag" = "true" && {
+            wid="$arg"
+            fnmatch '0x*' "$wid" && {
+                X=$(wattr x $wid)
+                Y=$(wattr y $wid)
+                W=$(($(wattr w $wid) + 2))
+                H=$(($(wattr h $wid) + 2))
+                RESOLUTION=$(echo $W x $H | sed 's# ##g')
+                AREA=$(echo "$AREA+$X,$Y")
+            }
+
+            widFlag=false
+        }
+
+        case $arg in
+            -i|--wid) widFlag=true ;;
+        esac
+    done
+
+    record
+
+    test "$encodeFlag" = "true" && {
+        reencode
+    }
+}
+
+test -z $1 && usage 1
+
+for arg in $ARGS; do
+    case $arg in
+        -q|--quiet) QUIETFLAG=true ;;
+        -h|--help)  usage 0        ;;
+    esac
+done
+
+test "$QUIETFLAG" = "true" && {
+    main $ARGS 2>&1 > /dev/null
+} || {
+    main $ARGS
+}
