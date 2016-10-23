@@ -1,9 +1,9 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 usage()
 {
     cat >&2 <<EOF
-usage: $(basename $0) [-h] [-b FILE] </path/from> </path/to>
+usage: $(basename $0) [-h] [-b FILE] </path/from/> </path/to/>
 EOF
     exit 1
 }
@@ -53,11 +53,12 @@ do
             help_
             ;;
         *)
-            test -d "$1" || wrong "file $1 doesn't exist, or isn't a directory."
-            test -z "$FILE_FROM" && {
+            [ -d "$1" ] || \
+                wrong "file $1 doesn't exist, or isn't a directory."
+            [ -z "$FILE_FROM" ] && {
                 FILE_FROM="$1"
             } || {
-                test -z "$FILE_TO" && {
+                [ -z "$FILE_TO" ] && {
                     FILE_TO="$1"
                 } || {
                     usage
@@ -71,16 +72,16 @@ done
 test -n "$FILE_FROM" || wrong "missing </path/from> argument."
 test -n "$FILE_TO" || wrong "missing </path/to> argument."
 
-for FILE in $(ls -A "$FILE_FROM")
-do 
+ls -A "$FILE_FROM" | while read FILE
+do
     # check whether file is contained in black-list.
     # if so, skip it.
-    test -f "$BLACK_LIST" && grep "$FILE" "$BLACK_LIST" >/dev/null && {
+    [ -f "$BLACK_LIST" ] && grep -q "$FILE" "$BLACK_LIST" && {
         printf '%s\n' "skipping $FILE_FROM/$FILE"
         continue
     }
 
-    printf '%s\n' "linking $FILE_FROM/$FILE -> $FILE_TO/$FILE"
-    ln -s "$(realpath "$FILE_FROM/$FILE")" "$FILE_TO/$FILE"
+    printf '%s\n' "linking $FILE_FROM/$FILE -> $FILE_TO/.$FILE"
+    ln -f -s "$(realpath "$FILE_FROM/$FILE")" "$FILE_TO/.$FILE"
 done
 

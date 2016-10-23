@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-
-sleep .5
-scrot -s -e 'mv $f ~/images/screenshots/shots/ && . ~/scripts/imgur.sh ~/images/screenshots/shots/$f | xclip -sel c'
-notify_bar alert '1d0' "$(xsel -ob)"
-

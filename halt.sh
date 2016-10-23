@@ -2,6 +2,6 @@
 
 while :
 do
-    sxhkd
+    sxhkd -c $HOME/.sxhkd/sxhkdrc
 done
 

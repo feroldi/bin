@@ -1,8 +1,8 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
-test $(pgrep -cx lemonbar) = 1 && exit 1
+[ $(pgrep -cx lemonbar) -eq 1 ] && exit 1
 
-. $HOME/scripts/extractcol.sh
+extractcol.sh
 
 BAR_BG="$BG"
 BAR_FG="$FG"

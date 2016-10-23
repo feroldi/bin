@@ -1,3 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 xrdb -load $HOME/.xres/xres
+

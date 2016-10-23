@@ -1,5 +1,0 @@
-#!/bin/zsh
-
-sudo mount /dev/sdb$1 /mnt
-ls --color=auto /mnt
-

@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 usage()
 {
@@ -14,9 +14,8 @@ wrong()
     usage 1
 }
 
-test -n "$1" || wrong "must specify a file."
-test -e "$1" || wrong "file doesn't exist."
+[ -n "$1" ] || wrong "must specify a file."
+[ -e "$1" ] || wrong "file doesn't exist."
 
 curl -sT- https://p.iotek.org < "$1"
-
 

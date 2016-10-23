@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 usage() {
     cat >&2 << EOF
@@ -55,14 +55,14 @@ while test $# -gt 0; do
 done
 
 wrong_arg() {
-    printf '%s\n' "wrong argument for file: $1" >&2
+    printf '%s\n' "$(basename $0): wrong argument for file: $1" >&2
     usage 1
 }
 
 test -n "$SOLID" && {
     hsetroot -solid "$SOLID"
-    cat << EOF > $HOME/.env/rootimg
-#!/usr/bin/env sh
+    cat << EOF >$HOME/.env/rootimg
+#!/bin/sh
 hsetroot -solid '$SOLID'
 
 EOF
@@ -70,12 +70,12 @@ EOF
     test -n "$IMG" || wrong_arg "no file was given"
     test -f "$IMG" || wrong_arg "$IMG doesn't exist"
 
-    hsetroot $REND $IMG -blur $BLUR $(test -n "$TINT" && \
+    hsetroot $REND $IMG -blur $BLUR $([ -n "$TINT" ] && \
                     printf '%s' "-tint $TINT" || printf '%s' "")
 
 
-    cat << EOF > $HOME/.env/rootimg
-#!/usr/bin/env sh
+    cat << EOF >$HOME/.env/rootimg
+#!/bin/sh
 hsetroot $REND $IMG -blur $BLUR $(test -n "$TINT" && printf '%s' "-tint '$TINT'" \
                                                   || printf '%s' "")
 
