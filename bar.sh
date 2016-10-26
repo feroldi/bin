@@ -2,7 +2,7 @@
 
 [ $(pgrep -cx lemonbar) -eq 1 ] && exit 1
 
-extractcol.sh
+. extractcol.sh
 
 BAR_BG="$BG"
 BAR_FG="$FG"
@@ -18,22 +18,27 @@ PH=19 # 24
 PX=$((1366 - PW)) # 22
 PY=$((768 - PH)) # 10
 
-clock() {
-  d=$(date "+%d %b %a %Y")
-  c=$(date "+%H:%M")
-  echo "%{F$ICON_COLOR}$(printf '%b' "\ue1a2")%{F$BAR_FG}${d}    %{F$ICON_COLOR}$(printf '%b' "\ue018")%{F$BAR_FG}${c}"
+clock()
+{
+  DATE=$(date "+%d %b %a %Y")
+  TIME=$(date "+%H:%M")
+  BUFFER+="%{F$ICON_COLOR}$(printf '%b' "\ue1a2")%{F$BAR_FG}$DATE"
+  BUFFER+="    "
+  BUFFER+="%{F$ICON_COLOR}$(printf '%b' "\ue018")%{F$BAR_FG}$TIME"
+  printf '%s\n' "$BUFFER"
 }
 
-pow() {
+pow()
+{
 	FOLD="/sys/class/power_supply"
-	val=$(if [ -d $FOLD/BAT* ]; then cat $FOLD/BAT*/capacity; fi)
-	pow=$(if [ $(cat $FOLD/AC*/online) = 1 ];\
-        then echo "$(printf '%b' "\ue200")"; else echo "$(printf '%b' "\ue201")";fi;)
-	echo "%{F$ICON_COLOR}${pow}%{F$BAR_FG}${val}"
+	BAT_CAP=$([ -d $FOLD/BAT* ] && cat $FOLD/BAT*/capacity || echo none)
+	ICON=$([ "$(cat $FOLD/AC*/online)" -eq 1 ] && \
+        printf '%b' "\ue200" ||  printf '%b' "\ue201")
+	echo "%{F$ICON_COLOR}$ICON%{F$BAR_FG}$BAT_CAP"
 }
 
 while :; do 
-    echo "  %{c}$(pow)    $(clock) "
+    printf '%s\n' "  %{c}$(pow)    $(clock) "
 	sleep 1
  done | lemonbar -g ${PW}x${PH}+${PX}+${PY}\
      -B "$BAR_BG" -F "$BAR_FG" -p -d -f "$FONT1" -f "$FONT2"

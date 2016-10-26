@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
 export BG=$(xrq background)
 export FG=$(xrq foreground)
