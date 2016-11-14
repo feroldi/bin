@@ -1,12 +1,12 @@
 #!/bin/sh
 
-[ $(pgrep -cx lemonbar) -eq 1 ] && exit 1
+[ $(pgrep -cx bar.sh) -gt 2 ] && exit 1
 
 . extractcol.sh
 
-BAR_BG="$BG"
+BAR_BG="#00000000"
 BAR_FG="$FG"
-ICON_COLOR="$BLUE"
+ICON_COLOR="$(xrq color15)"
 
 # Fonts
 FONT1="siji:size=9"

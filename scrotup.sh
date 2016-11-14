@@ -11,5 +11,5 @@ sleep .5
 scrot -s -e "mv \$f $HOME/usr/media/img/screenshots/shots/ && \
     $UPLOAD $HOME/usr/media/img/screenshots/shots/\$f | xclip -sel c"
 
-# TODO alert
+note.sh "$(printf '%b' "\ue1d0") $(xclip -o -sel c)"
 
