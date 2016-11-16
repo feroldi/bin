@@ -10,7 +10,8 @@ BAR_FG="$FG"
 FONT1="siji:size=9"
 FONT2="-xos4-terminus-medium-r-normal--12-120-72-72-c-60-iso10646-1"
 
-PW=250
+PW=${#1}
+PW=$((PW*7+8))
 PH=19
 PX=0
 PY=$((768 - PH))
@@ -27,5 +28,5 @@ open_bar()
     -f "$FONT2"
 }
 
-(echo " $1"; sleep ${DURATION}) | open_bar
+(echo " $1"; sleep ${DURATION}) | open_bar &
 

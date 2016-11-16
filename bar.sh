@@ -13,7 +13,7 @@ FONT1="siji:size=9"
 FONT2="-xos4-terminus-medium-r-normal--12-120-72-72-c-60-iso10646-1"
 
 # Panel 
-PW=250 # 1366
+PW=200 # 1366
 PH=19 # 24
 PX=$((1366 - PW)) # 22
 PY=$((768 - PH)) # 10
@@ -38,7 +38,7 @@ pow()
 }
 
 while :; do 
-    printf '%s\n' "  %{c}$(pow)    $(clock) "
+    printf '%s\n' "  %{c}$(clock) "
 	sleep 1
  done | lemonbar -g ${PW}x${PH}+${PX}+${PY}\
      -B "$BAR_BG" -F "$BAR_FG" -p -d -f "$FONT1" -f "$FONT2"
