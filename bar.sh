@@ -4,7 +4,7 @@
 
 . extractcol.sh
 
-BAR_BG="#00000000"
+BAR_BG="$BG"
 BAR_FG="$FG"
 ICON_COLOR="$(xrq color15)"
 
@@ -13,10 +13,10 @@ FONT1="siji:size=9"
 FONT2="-xos4-terminus-medium-r-normal--12-120-72-72-c-60-iso10646-1"
 
 # Panel 
-PW=200 # 1366
-PH=19 # 24
-PX=$((1366 - PW)) # 22
-PY=$((768 - PH)) # 10
+PW=190
+PH=18
+PX=$((1366 - PW))
+PY=$((768 - PH - 2))
 
 clock()
 {
@@ -38,8 +38,8 @@ pow()
 }
 
 while :; do 
-    printf '%s\n' "  %{c}$(clock) "
+    printf '%s\n' "  %{c}%{U$GREEN}%{+u}$(clock)%{-u}"
 	sleep 1
  done | lemonbar -g ${PW}x${PH}+${PX}+${PY}\
-     -B "$BAR_BG" -F "$BAR_FG" -p -d -f "$FONT1" -f "$FONT2"
+     -B "$BAR_BG" -F "$BAR_FG" -p -d -f "$FONT1" -f "$FONT2" -u 0
 
