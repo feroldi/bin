@@ -7,7 +7,7 @@ SOCKET=/tmp/mpvsocket
 BAR_BG="$BG"
 BAR_FG="$FG"
 ICON_COLOR="#000000"
-ICON_BG="#0f0f0f"
+ICON_BG="$(xrq color1)"
 
 # Fonts
 FONT1="siji:size=9"
@@ -15,7 +15,7 @@ FONT2="-*-yuki-*-*-*-*-*-*-*-*-*-*-*-*"
 
 # Panel 
 PW=320
-PH=18
+PH=14
 PX=$((1366 - PW - 220)) # offset
 PY=$((768 - PH - 2))
 
@@ -52,7 +52,7 @@ mpv_action()
 [ -S $SOCKET ] && {
   mpv_action loadfile "$1" append-play
   [ -e "$1" ] && {
-    note.sh e0fd "added $1 to playlist"
+    note.sh e0fd "added \`$1\` to playlist"
   } || {
     note.sh e0fd "added \`$(youtube-dl -e $1)\` to playlist"
   }
