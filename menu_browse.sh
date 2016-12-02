@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DIR=~/
+[ -n "$1" ] && DIR="$1" || DIR=~/
 
 (
 while [ -d "$DIR" ]; do

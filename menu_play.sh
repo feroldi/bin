@@ -2,7 +2,7 @@
 
 case "$(printf 'clipboard\nbrowse' | menu.sh -c "$(xrq color3)" -p play)" in
   browse)
-    DIR="$(menu_browse.sh)"
+    DIR="$(menu_browse.sh ~/usr/media/msc/)"
     [ -n "$DIR" ] && play.sh "$DIR"&
     ;;
   clipboard)
