@@ -7,7 +7,7 @@ SOCKET=/tmp/mpvsocket
 BAR_BG="$BG"
 BAR_FG="$FG"
 ICON_COLOR="#000000"
-ICON_BG="$(xrq color1)"
+ICON_BG="$(xrq color8)"
 
 # Fonts
 FONT1="siji:size=9"
@@ -17,7 +17,7 @@ FONT2="-*-yuki-*-*-*-*-*-*-*-*-*-*-*-*"
 PW=320
 PH=14
 PX=$((1366 - PW - 220)) # offset
-PY=$((768 - PH - 2))
+PY=$((768 - PH))
 
 fmt_icon_message()
 {
@@ -50,9 +50,9 @@ mpv_action()
 }
 
 [ -S $SOCKET ] && {
-  mpv_action loadfile "$1" append-play
+  mpv_action loadfile "\"$1\"" append-play
   [ -e "$1" ] && {
-    note.sh e0fd "added \`$1\` to playlist"
+    note.sh e0fd "added \`$(basename "$1")\` to playlist"
   } || {
     note.sh e0fd "added \`$(youtube-dl -e $1)\` to playlist"
   }
@@ -107,7 +107,7 @@ panel_status()
 }
 
 (
-  while sleep 0.5
+  while sleep 1
   do
     kill -0 $MPV_PID || exit
     printf '%s\n' "%{U$ICON_BG}$(panel_status) "
@@ -130,7 +130,7 @@ panel_status()
         ;;
       pl) set_prop pause false
         ;;
-      e) exit
+      e) kill $MPV_PID
         ;;
     esac
   done

@@ -7,7 +7,7 @@
 BAR_BG="$BG"
 BAR_FG="$FG"
 ICON_COLOR="#000000"
-ICON_BG="$(xrq color1)"
+ICON_BG="$(xrq color8)"
 
 # Fonts
 FONT1="siji:size=9"
@@ -17,7 +17,7 @@ FONT2="-*-yuki-*-*-*-*-*-*-*-*-*-*-*-*"
 PW=190
 PH=14
 PX=$((1366 - PW))
-PY=$((768 - PH - 2))
+PY=$((768 - PH))
 
 fmt_icon_message()
 {
