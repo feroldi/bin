@@ -71,10 +71,7 @@ exit_guard()
 
 trap 'exit_guard' 0
 
-# wait till mpv is working properly
-sleep 1
-
-set_prop loop true
+(sleep 5; set_prop loop true)&
 
 panel_status()
 {
