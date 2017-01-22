@@ -2,12 +2,10 @@
 
 SOCKET=/tmp/mpvsocket
 
-. extractcol.sh
-
-BAR_BG="$BG"
-BAR_FG="$FG"
+BAR_BG="$(xrq background)"
+BAR_FG="$(xrq foreground)"
 ICON_COLOR="#000000"
-ICON_BG="$(xrq color8)"
+ICON_BG="$(xrq color2)"
 
 # Fonts
 FONT1="siji:size=9"

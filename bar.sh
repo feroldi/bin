@@ -7,7 +7,7 @@
 BAR_BG="$BG"
 BAR_FG="$FG"
 ICON_COLOR="#000000"
-ICON_BG="$(xrq color8)"
+ICON_BG="$(xrq color2)"
 
 # Fonts
 FONT1="siji:size=9"

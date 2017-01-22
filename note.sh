@@ -7,7 +7,7 @@ DURATION=${3:-3}
 BAR_BG="$BG"
 BAR_FG="$FG"
 ICON_COLOR='#000000'
-ICON_BG="$(xrq color8)"
+ICON_BG="$(xrq color2)"
 
 FONT1='siji:size=9'
 FONT2='-*-yuki-*-*-*-*-*-*-*-*-*-*-*-*'

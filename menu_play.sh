@@ -10,7 +10,7 @@ case "$(printf 'clipboard\nbrowse\nsearch\nplaylist' | \
     play.sh "$(xclip -o -sel c)"&
     ;;
   search)
-    SEARCH="$(echo | menu.sh -c "$(xrq color3)" -p search)"
+    SEARCH="$(menu.sh -c "$(xrq color3)" -p search < /dev/null)"
     play.sh "ytdl://ytsearch:$SEARCH"
     ;;
   playlist)
