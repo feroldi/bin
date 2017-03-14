@@ -7,7 +7,8 @@
 BAR_BG="$BG"
 BAR_FG="$FG"
 ICON_COLOR="#000000"
-ICON_BG="$(xrq color2)"
+#ICON_BG="$(xrq color6)"
+ICON_BG="#005f87"
 
 # Fonts
 FONT1="siji:size=9"
@@ -21,8 +22,7 @@ PY=$((768 - PH))
 
 fmt_icon_message()
 {
-  printf %s \
-    "%{+u}%{F$ICON_COLOR}%{B$ICON_BG} $(printf %b "\u$1") %{B-}%{F-} $2 %{-u} "
+  printf %s "%{+u}%{F$ICON_COLOR}%{B$ICON_BG} $(printf %b "\u$1") %{B-}%{F-} $2 %{-u} "
 }
 
 clock()
@@ -37,6 +37,5 @@ do
   printf '%s\n' "%{U$ICON_BG}$(clock) "
 	sleep 1
 done
-) | lemonbar -g ${PW}x${PH}+${PX}+${PY}\
-  -B "$BAR_BG" -F "$BAR_FG" -d -f "$FONT1" -f "$FONT2" -u 2
+) | lemonbar -g ${PW}x${PH}+${PX}+${PY} -B "$BAR_BG" -F "$BAR_FG" -d -f "$FONT1" -f "$FONT2" -u 2
 

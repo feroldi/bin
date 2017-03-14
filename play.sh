@@ -5,7 +5,8 @@ SOCKET=/tmp/mpvsocket
 BAR_BG="$(xrq background)"
 BAR_FG="$(xrq foreground)"
 ICON_COLOR="#000000"
-ICON_BG="$(xrq color2)"
+#ICON_BG="$(xrq color6)"
+ICON_BG="#005f87"
 
 # Fonts
 FONT1="siji:size=9"

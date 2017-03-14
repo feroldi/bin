@@ -14,7 +14,7 @@ case "$(printf 'clipboard\nbrowse\nsearch\nplaylist' | \
     play.sh "ytdl://ytsearch:$SEARCH"
     ;;
   playlist)
-    play.sh "https://youtube.com/playlist?list=$(xclip -o -sel c)"
+    play.sh "https://youtube.com/playlist?list=$(xclip -o -sel c | sed 's/.*list=//')"
     ;;
 esac
 
