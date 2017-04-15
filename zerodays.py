@@ -198,13 +198,16 @@ def generate_agenda_list(data, day, all=False, simple=True):
     description = 'Mark with `done` the tasks you\'ve accomplished.\n' \
                   'You can edit the TODOs\' descriptions.'
 
-    if all is True:
-        todo_list = todos
+    if all:
+        todo_list = []
+        for uuid in todos:
+            if uuid not in done_todos:
+                todo_list.append(uuid)
     else:
         weekday, stats = find_todays_prod(calculate_weekdays_statistics(commits, day), day)
         todo_list = get_fitting_todos(data, stats, day)
 
-    if simple is True:
+    if simple:
         for uuid in todo_list:
             t = todos[uuid]
             initial_message += 'todo ' + uuid + ' ' + t['descr'] + '\n'
@@ -336,11 +339,13 @@ if __name__ == "__main__":
     parser_dump_task.add_argument('--date', dest='date', default=None)
     parser_dump_task.add_argument('--all', dest='all', action='store_true')
     parser_dump_task.add_argument('--oneline', dest='oneline', action='store_true')
+    parser_dump_task.add_argument('--yesterday', dest='yesterday', action='store_true')
     parser_dump_task.set_defaults(func=dump_tasks)
 
     parser_todo = subparsers.add_parser('todo')
     parser_todo.add_argument('kind', choices=list(TodoKind.keys()))
     parser_todo.add_argument('rank', choices=list(TodoRank.keys()))
+    parser_todo.add_argument('--yesterday', dest='yesterday', action='store_true')
     parser_todo.set_defaults(func=add_todo)
 
     parser_agenda = subparsers.add_parser('agenda')
@@ -357,7 +362,7 @@ if __name__ == "__main__":
 
     with io.open(args.filename, 'r') as f:
         data = json.load(f)
-        today = datetime.today().strftime('%x')
+        today = (datetime.today() - timedelta(days=1)).strftime('%x') if args.yesterday else datetime.today().strftime('%x')
         if today not in data['commits']:
             data['commits'][today] = {'points': 0, 'tasks': []}
         if today not in data['done_todo']:

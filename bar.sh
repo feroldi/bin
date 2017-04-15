@@ -35,7 +35,7 @@ clock()
 while :
 do
   printf '%s\n' "%{U$ICON_BG}$(clock) "
-	sleep 1
+  sleep 1
 done
 ) | lemonbar -g ${PW}x${PH}+${PX}+${PY} -B "$BAR_BG" -F "$BAR_FG" -d -f "$FONT1" -f "$FONT2" -u 2
 
