@@ -11,8 +11,8 @@ ICON_COLOR="#000000"
 ICON_BG="#005f87"
 
 # Fonts
-FONT1="siji:size=9"
-FONT2="-*-yuki-*-*-*-*-*-*-*-*-*-*-*-*"
+FONT1='siji:size=9'
+FONT2='lime:size=8'
 
 # Panel 
 PW=190

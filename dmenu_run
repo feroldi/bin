@@ -1,2 +1,0 @@
-#!/bin/sh
-dmenu_path | menu.sh -p 'exec' -c "#a2a2a5" "$@" | ${SHELL:-"/bin/sh"} &

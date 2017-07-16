@@ -33,6 +33,6 @@ while test $# -gt 0; do
     esac
 done
 
-dmenu -fn "lime:size=8" -p "$PROMPT" -sb "$COL" \
+dmenu -fn 'Consolas:size=8' -p "$PROMPT" -sb "$COL" \
     -sf '#000000' -nb '#000000' -b "$@" 
 

@@ -1,5 +1,12 @@
 #!/bin/python3
 
+'''
+Ideas for the refactorying:
+
++ TODO: list of TODOs
++ DONE: list of done TODOs (ids)
+'''
+
 import json
 import argparse
 import sys, os, io
@@ -27,6 +34,7 @@ TodoRank = {
         'low': (range(0, 2), 2),
         'medium': (range(2, 5), 2),
         'high': (range(5, 7), 3),
+        'hard': (range(5, 7), 4),
         'always': (range(0, 7), 2),
         }
 
@@ -82,7 +90,7 @@ def calculate_weekdays_statistics(commits, today=None):
     for wk in points_per_weekday:
         day = points_per_weekday[wk]
         weekdays_average[wk] = day['points'] / day['average']
-    
+
     # Sort weekdays by their average.
     sorted_days = {}
     sorted_weekdays_average = sorted(weekdays_average.items(), key=lambda x: x[1])
@@ -136,11 +144,17 @@ def input_from_editor(description='', initial=''):
 
     @initial:     The initial content for the file.
     """
+    def add_comment(out, comment):
+        comment = '# '.join(comment.splitlines(True))
+        out.write(f'# {comment}\n'.encode())
+
     with tempfile.NamedTemporaryFile(suffix='.tmp') as f:
         if len(initial) > 0:
             f.write(initial.encode())
         if len(description) > 0:
-            f.write('# '.join(('\n' + description + '\n\nLines starting with # will be ignored.').splitlines(True)).encode())
+            f.write('\n'.encode())
+            add_comment(f, description)
+            add_comment(f, 'Lines starting with # will be ignored.')
         f.flush()
         editor = os.environ.get('EDITOR', 'vi')
         call([editor, f.name])
@@ -149,7 +163,14 @@ def input_from_editor(description='', initial=''):
         for line in f:
             if len(line) > 0 and not line.decode().startswith('#'):
                 message += line
-    return message.decode().rstrip('\n')
+
+    message = message.decode()
+
+    if message.startswith('cancel'):
+        print('canceling commit.', file=sys.stderr)
+        sys.exit(0)
+
+    return message.rstrip('\n')
 
 def add_todo(args, data):
     """
@@ -161,7 +182,7 @@ def add_todo(args, data):
 
         "uuid (8 bytes)": {
             "kind": "fixed|normal",
-            "rank": "low|medium|high|always",
+            "rank": "low|medium|high|hard|always",
             "descr": "description message",
         }
     """
@@ -215,7 +236,7 @@ def generate_agenda_list(data, day, all=False, simple=True):
         for uuid in todo_list:
             t = todos[uuid]
             initial_message += 'todo ' + t['kind'] + ' ' + t['rank'] + ' ' + uuid + ' ' + t['descr'] + '\n'
-    
+
     return description, initial_message
 
 def parse_todo_lines(data, lines, simple=True, today=None):
@@ -227,7 +248,7 @@ def parse_todo_lines(data, lines, simple=True, today=None):
     if simple is True:
         line_re = re.compile('^\s*(todo|done|forget)\s*([0-9a-f]{8})\s*(.*)$')
     else:
-        line_re = re.compile('^\s*(todo|done|forget)\s*(normal|fixed)\s*(low|medium|high|always)\s*([0-9a-f]{8})\s*(.*)$')
+        line_re = re.compile('^\s*(todo|done|forget)\s*(normal|fixed)\s*(low|medium|high|hard|always)\s*([0-9a-f]{8})\s*(.*)$')
 
     for line in lines:
         m = line_re.match(line)
@@ -243,7 +264,7 @@ def parse_todo_lines(data, lines, simple=True, today=None):
 
         assert status in ['todo', 'done', 'forget'], "Status of a TODO is 'todo', 'done' or 'forget'."
         assert uuid in todos, uuid + " doesn't exist. Did you change anything?"
-        assert len(descr) != 0, "No description provided for " + uuid + "." 
+        assert len(descr) != 0, "No description provided for " + uuid + "."
 
         # Update todo's information.
         single_todo = todos[uuid]
@@ -372,4 +393,5 @@ if __name__ == "__main__":
 
     with io.open(args.filename, 'w') as f:
         json.dump(data, f)
+    shutil.copyfile(args.filename, f'{args.filename}.bkp')
 
