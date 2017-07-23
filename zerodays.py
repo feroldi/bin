@@ -35,7 +35,8 @@ TodoRank = {
         'medium': (range(2, 5), 2),
         'high': (range(5, 7), 3),
         'hard': (range(5, 7), 4),
-        'always': (range(0, 7), 2),
+        'asap': (range(0, 7), 2),
+        'routine': (range(1, 7), 1),
         }
 
 # Note: Fixed TODOs won't get poped out from the agenda.
@@ -182,7 +183,7 @@ def add_todo(args, data):
 
         "uuid (8 bytes)": {
             "kind": "fixed|normal",
-            "rank": "low|medium|high|hard|always",
+            "rank": "low|medium|high|hard|asap|routine",
             "descr": "description message",
         }
     """
@@ -248,7 +249,7 @@ def parse_todo_lines(data, lines, simple=True, today=None):
     if simple is True:
         line_re = re.compile('^\s*(todo|done|forget)\s*([0-9a-f]{8})\s*(.*)$')
     else:
-        line_re = re.compile('^\s*(todo|done|forget)\s*(normal|fixed)\s*(low|medium|high|hard|always)\s*([0-9a-f]{8})\s*(.*)$')
+        line_re = re.compile('^\s*(todo|done|forget)\s*(normal|fixed)\s*(low|medium|high|hard|asap|routine)\s*([0-9a-f]{8})\s*(.*)$')
 
     for line in lines:
         m = line_re.match(line)
