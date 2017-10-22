@@ -4,4 +4,3 @@ while :
 do
     sxhkd -c $HOME/.sxhkd/sxhkdrc
 done
-

@@ -1,26 +1,26 @@
 #!/bin/sh
 
-DURATION=${3:-3}
+DURATION=${2:-2}
 
 . extractcol.sh
 
 BAR_BG="$BG"
 BAR_FG="$FG"
-ICON_COLOR='#000000'
-ICON_BG="$(xrq color2)"
+ICON_COLOR="$BAR_FG"
+ICON_BG="$BAR_BG"
 
-FONT1='siji:size=9'
-FONT2='-*-yuki-*-*-*-*-*-*-*-*-*-*-*-*'
+# Fonts
+FONT1='Wuncon Siji:style=Regular:size=8'
+FONT2='GohuFont:style=Regular:size=8'
 
-PW=$((24 + `textwidth "$FONT2" "$2"`/2*5))
+PW=200
 PH=14
 PX=0
-PY=$((768 - PH))
+PY=$((900 - PH))
 
 fmt_icon_message()
 {
-  printf %s \
-    "%{+u}%{F$ICON_COLOR}%{B$ICON_BG} $(printf %b "\u$1") %{B-}%{F-} $2 %{-u} "
+  printf %s "%{+u}%{F$ICON_COLOR}%{B$ICON_BG}%{B-}%{F-}$1%{-u} "
 }
 
 open_bar()
@@ -36,7 +36,7 @@ open_bar()
 }
 
 (
-  printf '%s\n' "%{U$ICON_BG}$(fmt_icon_message "$1" "$2")"
+  printf '%s\n' " %{U$ICON_BG}$(fmt_icon_message "$1")"
   sleep ${DURATION}
 ) | open_bar &
 

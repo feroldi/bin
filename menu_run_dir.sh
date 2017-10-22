@@ -1,6 +1,6 @@
 #!/bin/sh
 
-TOOL=$(dmenu_path | menu.sh -c "$(xrq color3)" -p run)
+TOOL=$(dmenu_path | menu.sh -c "#202020" -p run)
 [ -z "$TOOL" ] && exit 1
 
 DIR="$(menu_browse.sh)"

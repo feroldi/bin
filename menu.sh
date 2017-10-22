@@ -33,6 +33,6 @@ while test $# -gt 0; do
     esac
 done
 
-dmenu -fn 'Consolas:size=8' -p "$PROMPT" -sb "$COL" \
-    -sf '#000000' -nb '#000000' -b "$@" 
+dmenu -fn 'GohuFont:style=Regular:size=8' -p "$PROMPT" \
+  -sb "$COL" -sf '#ffffff' -nb '#ffffff' -nf '#101010' -b "$@"
 

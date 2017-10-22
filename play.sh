@@ -9,14 +9,14 @@ ICON_COLOR="#000000"
 ICON_BG="#005f87"
 
 # Fonts
-FONT1="siji:size=9"
-FONT2='lime:size=8'
+FONT1='Wuncon Siji:style=Regular'
+FONT2='Consolas:size=9'
 
-# Panel 
+# Panel
 PW=320
 PH=14
-PX=$((1366 - PW - 220)) # offset
-PY=$((768 - PH))
+PX=$((1600 - PW - 220)) # offset
+PY=$((900 - PH))
 
 fmt_icon_message()
 {
@@ -51,9 +51,9 @@ mpv_action()
 [ -S $SOCKET ] && {
   mpv_action loadfile "\"$1\"" append-play
   [ -e "$1" ] && {
-    note.sh e0fd "added \`$(basename "$1")\` to playlist"
+    note.sh "added \`$(basename "$1")\` to playlist"
   } || {
-    note.sh e0fd "added \`$(youtube-dl -e $1)\` to playlist"
+    note.sh "added \`$(youtube-dl -e $1)\` to playlist"
   }
   exit 0
 }
@@ -81,7 +81,7 @@ panel_status()
   fmt_button b e097
 
   # play/pause
-  [ $(get_prop pause) = true ] && {
+  [ "$(get_prop pause)" = true ] && {
     fmt_button pl e09a
   } || {
     fmt_button pa e09b

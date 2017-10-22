@@ -31,7 +31,7 @@ CardboardScore = {
 # This is meant to be compared against the weekdays statistics.
 # Describes the importance of a task.
 TodoRank = {
-        'low': (range(0, 2), 2),
+        'low': (range(0, 2), 1),
         'medium': (range(2, 5), 2),
         'high': (range(5, 7), 3),
         'hard': (range(5, 7), 4),
@@ -232,11 +232,11 @@ def generate_agenda_list(data, day, all=False, simple=True):
     if simple:
         for uuid in todo_list:
             t = todos[uuid]
-            initial_message += 'todo ' + uuid + ' ' + t['descr'] + '\n'
+            initial_message += f"todo {uuid} {t['descr']}\n"
     else:
         for uuid in todo_list:
             t = todos[uuid]
-            initial_message += 'todo ' + t['kind'] + ' ' + t['rank'] + ' ' + uuid + ' ' + t['descr'] + '\n'
+            initial_message += f"todo {t['kind']} {t['rank']} {uuid} {t['descr']}\n"
 
     return description, initial_message
 
