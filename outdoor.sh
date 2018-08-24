@@ -61,7 +61,7 @@ wrong_arg() {
 
 test -n "$SOLID" && {
     hsetroot -solid "$SOLID"
-    cat << EOF >$HOME/.env/rootimg
+    cat << EOF >$HOME/.wallpaper/setwall.sh
 #!/bin/sh
 hsetroot -solid '$SOLID'
 
@@ -74,7 +74,7 @@ EOF
                     printf '%s' "-tint $TINT" || printf '%s' "")
 
 
-    cat << EOF >$HOME/.env/rootimg
+    cat << EOF >$HOME/.wallpaper/setwall.sh
 #!/bin/sh
 hsetroot $REND $IMG -blur $BLUR $(test -n "$TINT" && printf '%s' "-tint '$TINT'" \
                                                   || printf '%s' "")
@@ -82,5 +82,5 @@ hsetroot $REND $IMG -blur $BLUR $(test -n "$TINT" && printf '%s' "-tint '$TINT'"
 EOF
 }
 
-chmod a+x $HOME/.env/rootimg
+chmod a+x $HOME/.wallpaper/setwall.sh
 

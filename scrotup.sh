@@ -1,15 +1,18 @@
 #!/bin/sh
 
-[ -z "$1" ] && {
-    printf '%s\n' "$(basename $0): expected an uploader tool."
-    exit 1
-}
+if [ -z "$1" ]; then
+  UPLOAD=$(cat<<EOF | menu.sh -p uploader
+clipshot.sh
+imgur.sh
+iotek.sh
+EOF
+  )
+fi
 
-UPLOAD="$1"
+${UPLOAD:=clipshot.sh}
 
 sleep .5
 scrot -s -e "mv \$f $HOME/usr/media/img/screenshots/shots/ && \
-    $UPLOAD $HOME/usr/media/img/screenshots/shots/\$f | xclip -sel c"
+    $UPLOAD $HOME/usr/media/img/screenshots/shots/\$f"
 
-note.sh "$(xclip -o -sel c)"
-
+note.sh "shot taken"

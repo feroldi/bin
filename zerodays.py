@@ -1,5 +1,4 @@
 #!/bin/python3
-
 '''
 Ideas for the refactorying:
 
@@ -21,30 +20,32 @@ from datetime import datetime
 from uuid import uuid4
 
 CardboardScore = {
-        'zero': 0,
-        'general': 1,
-        'agenda': 2,
-        'bounty': 3,
-        }
+    'zero': 0,
+    'general': 1,
+    'agenda': 2,
+    'work': 3,
+}
 
 # Note: Tweak this, respecting the range [0, 7).
 # This is meant to be compared against the weekdays statistics.
 # Describes the importance of a task.
 TodoRank = {
-        'low': (range(0, 2), 1),
-        'medium': (range(2, 5), 2),
-        'high': (range(5, 7), 3),
-        'hard': (range(5, 7), 4),
-        'asap': (range(0, 7), 2),
-        'routine': (range(1, 7), 1),
-        }
+    'low': (range(0, 2), 1),
+    'medium': (range(2, 5), 2),
+    'high': (range(5, 7), 3),
+    'hard': (range(5, 7), 4),
+    'asap': (range(0, 7), 2),
+    'routine': (range(1, 7), 1),
+    'disabled': (range(0), 0),
+}
 
 # Note: Fixed TODOs won't get poped out from the agenda.
 # Note to myself: why do i have shit like general and agenda here?
 TodoKind = {
-        'normal': 'general',
-        'fixed': 'agenda',
-        }
+    'normal': 'general',
+    'fixed': 'agenda',
+}
+
 
 def calculate_weekdays_statistics(commits, today=None):
     """
@@ -76,30 +77,35 @@ def calculate_weekdays_statistics(commits, today=None):
             points_per_weekday[weekday]['points'] += commit['points']
             points_per_weekday[weekday]['average'] += 1
         else:
-            points_per_weekday[weekday] = {'points': commit['points'], 'average': 1}
+            points_per_weekday[weekday] = {
+                'points': commit['points'],
+                'average': 1
+            }
 
     # Calculates the average (points / worked days) of each weekday.
     weekdays_average = {
-            'Sunday': 1,
-            'Monday': 1,
-            'Tuesday': 1,
-            'Wednesday': 1,
-            'Thursday': 1,
-            'Friday': 1,
-            'Saturday': 1
-            }
+        'Sunday': 1,
+        'Monday': 1,
+        'Tuesday': 1,
+        'Wednesday': 1,
+        'Thursday': 1,
+        'Friday': 1,
+        'Saturday': 1
+    }
     for wk in points_per_weekday:
         day = points_per_weekday[wk]
         weekdays_average[wk] = day['points'] / day['average']
 
     # Sort weekdays by their average.
     sorted_days = {}
-    sorted_weekdays_average = sorted(weekdays_average.items(), key=lambda x: x[1])
+    sorted_weekdays_average = sorted(
+        weekdays_average.items(), key=lambda x: x[1])
 
     for idx, (day, avg) in enumerate(sorted_weekdays_average):
         sorted_days[day] = idx
 
     return sorted_days
+
 
 def find_todays_prod(stats, today=None):
     """
@@ -109,9 +115,11 @@ def find_todays_prod(stats, today=None):
 
     @stats: Expects its value from calculate_weekdays_statistics.
     """
-    today = datetime.today() if today is None else datetime.strptime(today, '%m/%d/%y')
+    today = datetime.today() if today is None else datetime.strptime(
+        today, '%m/%d/%y')
     today = today.strftime('%A')
     return today, stats[today]
+
 
 def get_fitting_todos(data, stats, today=None):
     """
@@ -134,35 +142,37 @@ def get_fitting_todos(data, stats, today=None):
 
     return out_todos
 
+
 def input_from_editor(description='', initial=''):
     """
     Fires up an editor with a temporary file, then reads back
     its content after the user closes it.
 
     @description: Some information the user might need to know (it goes into the file,
-                  at the second line). Every line will start with a '#' character automatically, so
+                  at the second line). Every line will start with a ';' character automatically, so
                   it gets ignored when reading back file's content.
 
     @initial:     The initial content for the file.
     """
-    def add_comment(out, comment):
-        comment = '# '.join(comment.splitlines(True))
-        out.write(f'# {comment}\n'.encode())
 
-    with tempfile.NamedTemporaryFile(suffix='.tmp') as f:
+    def add_comment(out, comment):
+        comment = '; '.join(comment.splitlines(True))
+        out.write(f'; {comment}\n'.encode())
+
+    with tempfile.NamedTemporaryFile(suffix='.tmp.md') as f:
         if len(initial) > 0:
             f.write(initial.encode())
         if len(description) > 0:
             f.write('\n'.encode())
             add_comment(f, description)
-            add_comment(f, 'Lines starting with # will be ignored.')
+            add_comment(f, 'Lines starting with ; will be ignored.')
         f.flush()
         editor = os.environ.get('EDITOR', 'vi')
         call([editor, f.name])
         f.seek(0)
         message = b''
         for line in f:
-            if len(line) > 0 and not line.decode().startswith('#'):
+            if len(line) > 0 and not line.decode().startswith(';'):
                 message += line
 
     message = message.decode()
@@ -172,6 +182,7 @@ def input_from_editor(description='', initial=''):
         sys.exit(0)
 
     return message.rstrip('\n')
+
 
 def add_todo(args, data):
     """
@@ -183,7 +194,7 @@ def add_todo(args, data):
 
         "uuid (8 bytes)": {
             "kind": "fixed|normal",
-            "rank": "low|medium|high|hard|asap|routine",
+            "rank": "low|medium|high|hard|asap|routine|disabled",
             "descr": "description message",
         }
     """
@@ -196,6 +207,7 @@ def add_todo(args, data):
     todo = data['todo']
     unique = str(uuid4())[:8]
     todo[unique] = {'kind': kind, 'rank': rank, 'descr': input.rstrip('\n')}
+
 
 def commit_task(score, data, message='', today=None):
     today = datetime.today().strftime('%x') if today is None else today
@@ -212,6 +224,7 @@ def commit_task(score, data, message='', today=None):
     commits[today]['points'] = max(0, commits[today]['points'] + points)
     commits[today]['tasks'].append(task_kind.upper() + ': ' + input)
 
+
 def generate_agenda_list(data, day, all=False, simple=True):
     commits = data['commits']
     todos = data['todo']
@@ -226,7 +239,8 @@ def generate_agenda_list(data, day, all=False, simple=True):
             if uuid not in done_todos:
                 todo_list.append(uuid)
     else:
-        weekday, stats = find_todays_prod(calculate_weekdays_statistics(commits, day), day)
+        weekday, stats = find_todays_prod(
+            calculate_weekdays_statistics(commits, day), day)
         todo_list = get_fitting_todos(data, stats, day)
 
     if simple:
@@ -240,16 +254,20 @@ def generate_agenda_list(data, day, all=False, simple=True):
 
     return description, initial_message
 
+
 def parse_todo_lines(data, lines, simple=True, today=None):
     # e.g. 'todo cafebabe I wanna take denilson away.'
     #        -> ['todo', 'cafebabe', 'I wanna take amorim away.']
     todos = data['todo']
-    done_todos = data['done_todo'][datetime.today().strftime('%x') if today is None else today]
+    done_todos = data['done_todo'][datetime.today().strftime('%x')
+                                   if today is None else today]
 
     if simple is True:
         line_re = re.compile('^\s*(todo|done|forget)\s*([0-9a-f]{8})\s*(.*)$')
     else:
-        line_re = re.compile('^\s*(todo|done|forget)\s*(normal|fixed)\s*(low|medium|high|hard|asap|routine)\s*([0-9a-f]{8})\s*(.*)$')
+        line_re = re.compile(
+            '^\s*(todo|done|forget)\s*(normal|fixed)\s*(low|medium|high|hard|asap|routine|disabled)\s*([0-9a-f]{8})\s*(.*)$'
+        )
 
     for line in lines:
         m = line_re.match(line)
@@ -260,10 +278,13 @@ def parse_todo_lines(data, lines, simple=True, today=None):
             status, uuid, descr = m.groups()
         else:
             status, kind, rank, uuid, descr = m.groups()
-            assert kind in TodoKind.keys(), "Kind shall be one of: " + str(list(TodoKind.keys()))
-            assert rank in TodoRank.keys(), "Rank shall be one of: " + str(list(TodoRank.keys()))
+            assert kind in TodoKind.keys(), "Kind shall be one of: " + str(
+                list(TodoKind.keys()))
+            assert rank in TodoRank.keys(), "Rank shall be one of: " + str(
+                list(TodoRank.keys()))
 
-        assert status in ['todo', 'done', 'forget'], "Status of a TODO is 'todo', 'done' or 'forget'."
+        assert status in ['todo', 'done', 'forget'
+                          ], "Status of a TODO is 'todo', 'done' or 'forget'."
         assert uuid in todos, uuid + " doesn't exist. Did you change anything?"
         assert len(descr) != 0, "No description provided for " + uuid + "."
 
@@ -281,9 +302,14 @@ def parse_todo_lines(data, lines, simple=True, today=None):
             else:
                 done_todos[uuid] = todos.pop(uuid)
             points = TodoRank[single_todo['rank']][1]
-            commit_task(score=('agenda', points), data=data, message='Committing ' + uuid + ' ' + descr + '\n', today=today)
+            commit_task(
+                score=('agenda', points),
+                data=data,
+                message='Committing ' + uuid + ' ' + descr + '\n',
+                today=today)
         elif status == 'forget':
             todos.pop(uuid)
+
 
 def manage_todos(data, all=False, simple=True, today=None):
     """
@@ -292,10 +318,13 @@ def manage_todos(data, all=False, simple=True, today=None):
     @data: The json's content.
     """
     today = datetime.today().strftime('%x') if today is None else today
-    description, initial_message = generate_agenda_list(data=data, day=today, all=all, simple=simple)
+    description, initial_message = generate_agenda_list(
+        data=data, day=today, all=all, simple=simple)
 
     if len(initial_message) == 0:
-        print('Congratulations! You\'ve done everything today. Time to have fun.')
+        print(
+            'Congratulations! You\'ve done everything today. Time to have fun.'
+        )
         return
 
     input = input_from_editor(description, initial_message)
@@ -304,17 +333,19 @@ def manage_todos(data, all=False, simple=True, today=None):
     # kind of lines. Ignore everything else.
     parse_todo_lines(data, input.split('\n'), simple, today)
 
+
 def manage_agenda(args, data):
-    day = (datetime.today() - timedelta(days=1)).strftime('%x') if args.yesterday else None
-    manage_todos(data=data, all=True, simple=not args.complete, today=day)
+    manage_todos(
+        data=data, all=True, simple=not args.complete, today=args.date)
+
 
 def add_task(args, data):
-    day = (datetime.today() - timedelta(days=1)).strftime('%x') if args.yesterday else None
     score = args.score
     if score == 'agenda':
         manage_todos(data=data, today=day)
     else:
-        commit_task(score=score, data=data, today=day)
+        commit_task(score=score, data=data, today=args.date)
+
 
 def dump_tasks(args, data):
     target_date = args.date
@@ -348,34 +379,41 @@ def dump_tasks(args, data):
     else:
         dump_task(datetime.today().strftime('%x'))
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Zero days? No more.')
     subparsers = parser.add_subparsers()
 
     parser_new_task = subparsers.add_parser('commit')
     parser_new_task.add_argument('score', choices=list(CardboardScore.keys()))
-    parser_new_task.add_argument('--yesterday', dest='yesterday', action='store_true')
+    parser_new_task.add_argument('--date', dest='date')
     parser_new_task.set_defaults(func=add_task)
 
     parser_dump_task = subparsers.add_parser('dump')
-    parser_dump_task.add_argument('--date', dest='date', default=None)
     parser_dump_task.add_argument('--all', dest='all', action='store_true')
-    parser_dump_task.add_argument('--oneline', dest='oneline', action='store_true')
-    parser_dump_task.add_argument('--yesterday', dest='yesterday', action='store_true')
+    parser_dump_task.add_argument(
+        '--oneline', dest='oneline', action='store_true')
+    parser_dump_task.add_argument('--date', dest='date')
     parser_dump_task.set_defaults(func=dump_tasks)
 
     parser_todo = subparsers.add_parser('todo')
     parser_todo.add_argument('kind', choices=list(TodoKind.keys()))
     parser_todo.add_argument('rank', choices=list(TodoRank.keys()))
-    parser_todo.add_argument('--yesterday', dest='yesterday', action='store_true')
+    parser_todo.add_argument('--date', dest='date')
     parser_todo.set_defaults(func=add_todo)
 
     parser_agenda = subparsers.add_parser('agenda')
-    parser_agenda.add_argument('--complete', dest='complete', action='store_true')
-    parser_agenda.add_argument('--yesterday', dest='yesterday', action='store_true')
+    parser_agenda.add_argument(
+        '--complete', dest='complete', action='store_true')
+    parser_agenda.add_argument('--date', dest='date')
+    parser_agenda.add_argument('--edit', action='store_true')
     parser_agenda.set_defaults(func=manage_agenda)
 
-    parser.add_argument('-o', dest='filename', default='/home/thlst/usr/zeroday/zerodays.json', help='Data file.')
+    parser.add_argument(
+        '-o',
+        dest='filename',
+        default='/home/thlst/usr/zeroday/zerodays.json',
+        help='Data file.')
     args = parser.parse_args(sys.argv[1:])
 
     with io.open(args.filename, 'a+') as f:
@@ -384,7 +422,7 @@ if __name__ == "__main__":
 
     with io.open(args.filename, 'r') as f:
         data = json.load(f)
-        today = (datetime.today() - timedelta(days=1)).strftime('%x') if args.yesterday else datetime.today().strftime('%x')
+        today = args.date if args.date else datetime.today().strftime('%x')
         if today not in data['commits']:
             data['commits'][today] = {'points': 0, 'tasks': []}
         if today not in data['done_todo']:
@@ -395,4 +433,3 @@ if __name__ == "__main__":
     with io.open(args.filename, 'w') as f:
         json.dump(data, f)
     shutil.copyfile(args.filename, f'{args.filename}.bkp')
-

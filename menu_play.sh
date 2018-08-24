@@ -1,7 +1,7 @@
 #!/bin/sh
 
 case "$(printf 'clipboard\nbrowse\nsearch\nplaylist' | \
-  menu.sh -c "#202020" -p play -l 4)" in
+  menu.sh -p play)" in
   browse)
     DIR="$(menu_browse.sh ~/usr/media/msc/)"
     [ -n "$DIR" ] && play.sh "$DIR"&
@@ -10,7 +10,7 @@ case "$(printf 'clipboard\nbrowse\nsearch\nplaylist' | \
     play.sh "$(xclip -o -sel c)"&
     ;;
   search)
-    SEARCH="$(menu.sh -c "$(xrq color3)" -p search < /dev/null)"
+    SEARCH="$(menu.sh -p search < /dev/null)"
     play.sh "ytdl://ytsearch:$SEARCH"
     ;;
   playlist)

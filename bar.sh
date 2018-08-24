@@ -1,11 +1,11 @@
 #!/bin/sh
 
-[ $(pgrep -cx bar.sh) -gt 2 ] && exit 1
+[ $(pgrep -cx bar.sh) -gt 1 ] && exit 1
 
 . extractcol.sh
 
 BAR_BG="$BG"
-BAR_FG="$FG"
+BAR_FG="#000000"
 GRAD1="#F0F0F0"
 GRAD2="#E0E0E0"
 #GRAD1="$(xrq color2)"
@@ -20,7 +20,7 @@ DISPLAY_Y=$(xrandr --current | grep '*' | uniq | awk '{print $1}' | cut -d 'x' -
 
 # Panel
 PW=$DISPLAY_X
-PH=14
+PH=13
 PX=$((DISPLAY_X - PW))
 PY=$((DISPLAY_Y - PH))
 
@@ -65,5 +65,5 @@ do
   printf '%s\n' " $(laptop)%{r}%{U$BAR_BG}$(battery)$(clock) "
   sleep 2
 done
-) | lemonbar -g ${PW}x${PH}+${PX}+${PY} -B "$BAR_BG" -F "$BAR_FG" -d -f "$FONT1" -f "$FONT2" -u 0
+) | lemonbar -g ${PW}x${PH}+${PX}+${PY} -B "$BAR_BG" -F "$BAR_FG" -d -o 1 -f "$FONT1" -o 1 -f "$FONT2" -u 0
 

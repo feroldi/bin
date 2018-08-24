@@ -27,6 +27,6 @@ for IMG in "$@"; do
   URL=$(echo "$RESP" | jshon -Q -e data -e link -u)
   [ -z "$URL" ] && die "$IMG: `echo "$RESP" | jshon -e rsp -e image -e error_msg -u`"
 
-  printf '%s\n' "$URL"
+  printf '%s\n' "$URL" | xclip -sel c
 done
 
