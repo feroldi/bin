@@ -1,8 +1,13 @@
-#!/usr/bin/env sh
+#!/bin/sh
+
+[ -z "$1" ] && {
+  cat <<EOF
+usage: $0 </path/to/output/file>
+EOF
+  exit 1
+}
 
 # -an disable audio recording
 
-ffmpeg -f x11grab -s 1600x900 \
-    -i :0.0 -f pulse -i default -an -c:v libvpx -b:v 5M -crf 10 \
-    -quality realtime "$1.webm"
+ffmpeg -f x11grab -s 1600x900 -hwaccel auto -i :0.0 -f pulse -ac 1 -i default -c:v libvpx -b:v 5M -crf 10 -quality realtime "$1.webm"
 

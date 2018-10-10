@@ -159,7 +159,7 @@ def input_from_editor(description='', initial=''):
         comment = '; '.join(comment.splitlines(True))
         out.write(f'; {comment}\n'.encode())
 
-    with tempfile.NamedTemporaryFile(suffix='.tmp.md') as f:
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.tmp.md') as f:
         if len(initial) > 0:
             f.write(initial.encode())
         if len(description) > 0:
