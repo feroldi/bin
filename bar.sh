@@ -15,8 +15,8 @@ GRAD2="#E0E0E0"
 FONT1='Wuncon Siji:style=Regular:size=7'
 FONT2='GohuFont:style=Regular:size=8'
 
-DISPLAY_X=$(xrandr --current | grep '*' | uniq | awk '{print $1}' | cut -d 'x' -f1)
-DISPLAY_Y=$(xrandr --current | grep '*' | uniq | awk '{print $1}' | cut -d 'x' -f2)
+DISPLAY_X=$(xrandr --current | grep '*' | head -n1 | uniq | awk '{print $1}' | cut -d 'x' -f1)
+DISPLAY_Y=$(xrandr --current | grep '*' | head -n1 | uniq | awk '{print $1}' | cut -d 'x' -f2)
 
 # Panel
 PW=$DISPLAY_X
