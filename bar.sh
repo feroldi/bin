@@ -27,17 +27,22 @@ PY=$((DISPLAY_Y - PH))
 print_status()
 {
     BACKGROUND=${3:-$GRAD1}
-    printf %s " %{B$GRAD1} %{B-}%{+u}%{B$BACKGROUND} $1 $2 %{B-}%{-u}%{B$GRAD1} %{B-} "
+    printf %s " %{B$GRAD1} %{B-}%{+u}%{B$BACKGROUND} $(printf "$1") $2 %{B-}%{-u}%{B$GRAD1} %{B-} "
 }
 
 memory_usage()
 {
-    print_status '#' "$(free -h | grep Mem: | awk "{print \$7}")"
+    print_status '\ue020' "$(free -h | grep Mem: | awk "{print \$7}")"
 }
 
 temperature()
 {
-    print_status 'C' "$(acpi -t | awk '{print $4}')"
+    print_status '\ue01c' "$(acpi -t | awk '{print $4}')"
+}
+
+battery_time()
+{
+    acpi | awk '{printf $5 "\n"}'
 }
 
 battery()
@@ -45,28 +50,23 @@ battery()
     BAT_LEVEL=$(cat /sys/class/power_supply/BAT0/capacity)
 
     if [ $BAT_LEVEL -ge 80 ]; then
-        print_status '' "$BAT_LEVEL [$(acpi | awk '{printf $5 "\n"}')]" "#2F2"
+        print_status '\ue1ff' "$BAT_LEVEL [$(battery_time)]" "#2F2"
     elif [ $BAT_LEVEL -ge 40 ]; then
-        print_status '' "$BAT_LEVEL [$(acpi | awk '{printf $5 "\n"}')]"
+        print_status '\ue1fe' "$BAT_LEVEL [$(battery_time)]"
     else
-        print_status '' "$BAT_LEVEL [$(acpi | awk '{printf $5 "\n"}')]" "#F22"
+        print_status '\ue1fd' "$BAT_LEVEL [$(battery_time)]" "#F22"
     fi
-}
-
-battery_time()
-{
-    print_status '' "$(acpi | awk '{printf $5 "\n"}')"
 }
 
 clock()
 {
-    print_status '' "$(date "+%d %b %a %Y")"
-    print_status '' "$(date "+%H:%M")"
+    print_status '\ue26a' "$(date "+%d %b %a %Y")"
+    print_status '\ue015' "$(date "+%H:%M")"
 }
 
 laptop()
 {
-    print_status '' T420
+    print_status '\ue1d8' T420
 }
 
 (

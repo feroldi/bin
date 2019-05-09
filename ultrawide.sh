@@ -20,7 +20,7 @@ update_keyboards() {
 }
 
 reset_monitor() {
-    xrandr --auto
+    xrandr --auto --output LVDS-1
 }
 
 reset_ws() {
@@ -35,7 +35,7 @@ if [[ $1 = 'set' ]]; then
     set_ws_to_ultra
     update_keyboards
 elif [[ $1 = 'reset' ]]; then
-    reset_ws
     reset_monitor
+    reset_ws
     update_keyboards
 fi
