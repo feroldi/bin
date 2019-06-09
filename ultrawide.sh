@@ -6,7 +6,7 @@ setup_ultra_res() {
 }
 
 set_ultra() {
-    xrandr --auto --output HDMI-1 --left-of LVDS-1 --mode "2560x1080"
+    xrandr --auto --output HDMI-1 --right-of LVDS-1 --mode "2560x1080"
 }
 
 set_ws_to_ultra() {
