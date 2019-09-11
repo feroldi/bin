@@ -41,10 +41,9 @@ fi
 
 #--- Configuration (can be set via environment variables) ---
 
-[[ -n $POMO_FILE ]] && POMO=$POMO_FILE || POMO=$HOME/.local/share/pomo
-
-[[ -n $POMO_WORK_TIME ]] && WORK_TIME=$POMO_WORK_TIME || WORK_TIME=25
-[[ -n $POMO_BREAK_TIME ]] && BREAK_TIME=$POMO_BREAK_TIME || BREAK_TIME=5
+POMO=${POMO_FILE:-$HOME/.local/share/pomo_running}
+WORK_TIME=${POMO_WORK_TIME:-25}
+BREAK_TIME=${POMO_BREAK_TIME:-5}
 
 #--- Pomodoro functions ---
 
@@ -141,7 +140,7 @@ function pomo_status {
         pomo_ispaused && prefix=P$prefix
         printf "%s\n" $prefix
     else
-        printf "-\n"
+        printf "%s\n" "-"
     fi
 }
 

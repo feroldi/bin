@@ -42,8 +42,8 @@ if __name__ == "__main__":
 
     log_file_path.parent.mkdir(parents=True, exist_ok=True)
 
-    if not log_file_path.is_file():  # TOCTOU, but who cares?
-        with io.open(log_file_path, mode="a", encoding="utf-8") as out:
+    with io.open(log_file_path, mode="a", encoding="utf-8") as out:
+        if out.tell() == 0:
             out.write(f"# DAILY THOUGHT: {log_date_utc.date()}\n\n")
 
     editor = os.environ.get("EDITOR", "vi")

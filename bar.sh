@@ -15,11 +15,11 @@ GRAD2="#E0E0E0"
 FONT1='Wuncon Siji:style=Regular:size=7'
 FONT2='GohuFont:style=Regular:size=8'
 
-DISPLAY_X=$(xrandr --current | grep '*' | head -n1 | uniq | awk '{print $1}' | cut -d 'x' -f1)
-DISPLAY_Y=$(xrandr --current | grep '*' | head -n1 | uniq | awk '{print $1}' | cut -d 'x' -f2)
+DISPLAY_X=$(xrandr --current | grep '*' | tail -n1 | uniq | awk '{print $1}' | cut -d 'x' -f1)
+DISPLAY_Y=$(xrandr --current | grep '*' | tail -n1 | uniq | awk '{print $1}' | cut -d 'x' -f2)
 
 # Panel
-PW=$DISPLAY_X
+PW=$((DISPLAY_X))
 PH=13
 PX=$((DISPLAY_X - PW))
 PY=$((DISPLAY_Y - PH))
@@ -43,7 +43,7 @@ temperature()
 
 battery_time()
 {
-    acpi | awk '{printf $5 "\n"}'
+    acpi -b | grep -v 'rate information unavailable' | cut -d ' ' -f 5
 }
 
 battery()
