@@ -10,6 +10,7 @@ set_ultra() {
 }
 
 set_ws_to_ultra() {
+    bspc wm -O HDMI-1 LVDS-1
     bspc monitor HDMI-1 -d 1 2 3 4 5
     bspc monitor LVDS-1 -d 6 7 8 9 0
 }
@@ -35,7 +36,9 @@ if [[ $1 = 'set' ]]; then
     set_ws_to_ultra
     update_keyboards
 elif [[ $1 = 'reset' ]]; then
-    reset_monitor
     reset_ws
+    reset_monitor
     update_keyboards
 fi
+
+reload.sh dark
